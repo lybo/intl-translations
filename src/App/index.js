@@ -16,6 +16,7 @@ import TranslateIcon from '@material-ui/icons/Translate';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import {makeStyles, useTheme} from '@material-ui/core/styles';
@@ -89,9 +90,6 @@ function App(props) {
     if (matches && !drawerOpen && data && data[mainLang]) {
       setDrawerOpen(true);
     }
-    // if (!matches && drawerOpen && data && data[mainLang]) {
-    //   setDrawerOpen(false);
-    // }
   }, [matches, drawerOpen, data, mainLang]);
 
   const handleDrawerToggle = () => {
@@ -175,49 +173,74 @@ function App(props) {
         <div className={classes.toolbar} />
 
         <Paper style={{padding: 20, marginBottom: 20}}>
-          <input
-            name="files"
-            type="file"
-            multiple
-            onChange={async e => {
-              const input = e.target;
+          {!data || !data[mainLang] ? (
+            <Button
+              fullWidth
+              color="primary"
+              variant="contained"
+              component="label">
+              Upload JSON Files
+              <input
+                name="files"
+                type="file"
+                multiple
+                hidden
+                onChange={async e => {
+                  const input = e.target;
 
-              const results = await Promise.all(
-                [...input.files].map(
-                  file =>
-                    new Promise((resolve, reject) => {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        try {
-                          console.log(file);
-                          const lang = file.name.replace('.json', '');
-                          resolve({lang, data: JSON.parse(reader.result)});
-                        } catch (err) {
-                          // Return a blank value; ignore non-JSON (or do whatever else)
-                          console.log('Please use .json!');
-                          resolve();
-                        }
-                      };
-                      reader.readAsText(file);
+                  const results = await Promise.all(
+                    [...input.files].map(
+                      file =>
+                        new Promise((resolve, reject) => {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            try {
+                              console.log(file);
+                              const lang = file.name.replace('.json', '');
+                              resolve({lang, data: JSON.parse(reader.result)});
+                            } catch (err) {
+                              // Return a blank value; ignore non-JSON (or do whatever else)
+                              console.log('Please use .json!');
+                              resolve();
+                            }
+                          };
+                          reader.readAsText(file);
+                        }),
+                    ),
+                  );
+
+                  const resultsObj = results.reduce(
+                    (acc, item) => ({
+                      ...acc,
+                      [item.lang]: item.data,
                     }),
-                ),
-              );
+                    {},
+                  );
+                  // Do Stuff
+                  console.log(results, resultsObj);
 
-              const resultsObj = results.reduce(
-                (acc, item) => ({
-                  ...acc,
-                  [item.lang]: item.data,
-                }),
-                {},
-              );
-              // Do Stuff
-              console.log(results, resultsObj);
-
-              setMainLang(Object.keys(resultsObj)[0]);
-              setData(resultsObj);
-              setDrawerOpen(true);
-            }}
-          />
+                  setMainLang(Object.keys(resultsObj)[0]);
+                  setData(resultsObj);
+                  setDrawerOpen(true);
+                }}
+              />
+            </Button>
+          ) : (
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+              <Button
+                color="secondary"
+                variant="contained"
+                size="small"
+                onClick={() => {
+                  setMainLang(null);
+                  setData({});
+                  setDrawerOpen(false);
+                  setSelected(null);
+                }}>
+                Cancel the translation
+              </Button>
+            </div>
+          )}
           <br />
           <br />
 
@@ -303,11 +326,91 @@ function App(props) {
             </div>
           </Paper>
         ) : null}
+
+        <Typography variant="h4" component="h1" align="center" gutterBottom>
+          intl-translations
+        </Typography>
         <Paper style={{padding: 20, marginBottom: 20}}>
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-            dolor purus non enim praesent elementum facilisis leo vel. Risus at
+          <Typography variant="h6" component="h2" gutterBottom align="center">
+            Translation editor for apps
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Grid container justify="center" spacing={2}>
+                <Grid item>
+                  <Paper style={{padding: 20}}>
+                    <Typography align="center" gutterBottom paragraph>
+                      react-intl
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      target="_blank"
+                      href="https://formatjs.io/docs/react-intl">
+                      Details
+                    </Button>
+                  </Paper>
+                </Grid>
+                <Grid item>
+                  <Paper style={{padding: 20}}>
+                    <Typography align="center" gutterBottom paragraph>
+                      vue-intl
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      target="_blank"
+                      href="https://formatjs.io/docs/vue-intl">
+                      Details
+                    </Button>
+                  </Paper>
+                </Grid>
+                <Grid item>
+                  <Paper style={{padding: 20}}>
+                    <Typography align="center" gutterBottom paragraph>
+                      formatjs
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      target="_blank"
+                      href="https://formatjs.io/docs/intl">
+                      Details
+                    </Button>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <br />
+          <Typography
+            variant="body1"
+            component="div"
+            gutterBottom
+            align="center">
+            This tool is meant to help developers who use{' '}
+            <Link
+              href="https://www.npmjs.com/package/babel-plugin-react-intl-auto"
+              target="_blank">
+              babel-plugin-react-intl-auto
+            </Link>{' '}
+            and{' '}
+            <Link
+              href="https://www.npmjs.com/package/extract-react-intl-messages"
+              target="_blank">
+              extract-react-intl-messages
+            </Link>
+          </Typography>
+          <br />
+        </Paper>
+        <Paper style={{padding: 20, marginBottom: 20}}>
+          <Typography variant="h6" component="h2" gutterBottom align="center">
+            JSON format
           </Typography>
           <Typography h3>english (en.json)</Typography>
           <Highlight language="js">
