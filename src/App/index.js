@@ -5,7 +5,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,10 +13,17 @@ import TextField from '@material-ui/core/TextField';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Paper from '@material-ui/core/Paper';
 import TranslateIcon from '@material-ui/icons/Translate';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import Grid from '@material-ui/core/Grid';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
 import {makeStyles, useTheme} from '@material-ui/core/styles';
 import Highlight from 'react-highlight.js';
 import Tree from '../Tree/';
 import Download from '../Download/';
+import Stats from '../Stats/';
+import Preview from '../Preview/';
 import getTranslationsToTree from './getTranslationsToTree';
 import _ from 'lodash';
 
@@ -33,10 +39,16 @@ const useStyles = makeStyles(theme => ({
       flexShrink: 0,
     },
   },
-  appBar: {
+  appBarWithDrawer: {
     [theme.breakpoints.up('sm')]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
+    },
+  },
+  appBarWithoutDrawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: `100%`,
+      marginLeft: 0,
     },
   },
   menuButton: {
@@ -65,14 +77,25 @@ function App(props) {
   const {window} = props;
   const classes = useStyles();
   const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   const [mainLang, setMainLang] = React.useState('en');
   const [selected, setSelected] = React.useState();
   const [data, setData] = React.useState({});
+  const [visiblePreview, setVisiblePreview] = React.useState(false);
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+  React.useEffect(() => {
+    if (matches && !drawerOpen && data && data[mainLang]) {
+      setDrawerOpen(true);
+    }
+    // if (!matches && drawerOpen && data && data[mainLang]) {
+    //   setDrawerOpen(false);
+    // }
+  }, [matches, drawerOpen, data, mainLang]);
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    setDrawerOpen(!drawerOpen);
   };
 
   const drawer = (
@@ -87,6 +110,7 @@ function App(props) {
           onSelect={nodeIds => {
             setSelected(nodeIds);
           }}
+          selected={selected}
         />
       ) : null}
     </div>
@@ -98,7 +122,11 @@ function App(props) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="fixed" className={classes.appBar}>
+      <AppBar
+        position="fixed"
+        className={
+          drawerOpen ? classes.appBarWithDrawer : classes.appBarWithoutDrawer
+        }>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -113,35 +141,36 @@ function App(props) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <nav className={classes.drawer} aria-label="mailbox folders">
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Hidden smUp implementation="css">
-          <Drawer
-            container={container}
-            variant="temporary"
-            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}>
-            {drawer}
-          </Drawer>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            variant="permanent"
-            open>
-            {drawer}
-          </Drawer>
-        </Hidden>
-      </nav>
+
+      {drawerOpen ? (
+        <nav className={classes.drawer} aria-label="mailbox folders">
+          {matches ? (
+            <Drawer
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              variant="permanent"
+              open={drawerOpen}>
+              {drawer}
+            </Drawer>
+          ) : (
+            <Drawer
+              container={container}
+              variant="temporary"
+              anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+              open={drawerOpen}
+              onClose={handleDrawerToggle}
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}>
+              {drawer}
+            </Drawer>
+          )}
+        </nav>
+      ) : null}
       <main className={classes.content}>
         <div className={classes.toolbar} />
 
@@ -186,24 +215,63 @@ function App(props) {
 
               setMainLang(Object.keys(resultsObj)[0]);
               setData(resultsObj);
+              setDrawerOpen(true);
             }}
           />
+          <br />
+          <br />
 
           {data && data[mainLang] ? (
-            <Download>
-              {({download}) => (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  startIcon={<CloudDownloadIcon />}
-                  onClick={() => {
-                    download(data);
+            <React.Fragment>
+              <Stats data={data} />
+              <br />
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <Download>
+                    {({download}) => (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        startIcon={<CloudDownloadIcon />}
+                        onClick={() => {
+                          download(data);
+                        }}>
+                        Download
+                      </Button>
+                    )}
+                  </Download>
+                </Grid>
+                <Grid
+                  item
+                  xs={6}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
                   }}>
-                  Download
-                </Button>
-              )}
-            </Download>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    startIcon={
+                      !visiblePreview ? (
+                        <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
+                      )
+                    }
+                    onClick={() => {
+                      setVisiblePreview(!visiblePreview);
+                    }}>
+                    {visiblePreview ? 'Hide' : 'Show'} Preview
+                  </Button>
+                </Grid>
+              </Grid>
+              <br />
+              {visiblePreview ? (
+                <Preview data={data} setSelected={setSelected} />
+              ) : null}
+            </React.Fragment>
           ) : null}
         </Paper>
         {selected ? (
@@ -241,9 +309,7 @@ function App(props) {
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
             dolor purus non enim praesent elementum facilisis leo vel. Risus at
           </Typography>
-          <Typography h3>
-              english (en.json)
-          </Typography>
+          <Typography h3>english (en.json)</Typography>
           <Highlight language="js">
             {`
 {
@@ -252,9 +318,7 @@ function App(props) {
 }
             `}
           </Highlight>
-          <Typography h3>
-              greek (el.json)
-          </Typography>
+          <Typography h3>greek (el.json)</Typography>
           <Highlight language="js">
             {`
 {

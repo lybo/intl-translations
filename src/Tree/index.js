@@ -140,7 +140,7 @@ function getObject(array, key, value) {
 }
 
 export default function Tree(props) {
-  const {values, data = [], onSelect} = props;
+  const {values, data = [], onSelect, selected} = props;
   const langs = Object.keys(values);
   const classes = useStyles();
 
@@ -182,7 +182,7 @@ export default function Tree(props) {
           //   onSelect(null);
         }
       }}
-      defaultExpanded={['1']}
+      selected={selected}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultEndIcon={<div style={{width: 24}} />}>
