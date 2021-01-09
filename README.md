@@ -1,4 +1,4 @@
-# intl-translaions
+# intl-translations
 
 ## Translation editor for apps
 
