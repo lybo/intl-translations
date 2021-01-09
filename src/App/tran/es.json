@@ -1,7 +1,8 @@
+
 {
   "Header.dashboard": "",
-  "Header.login": "Είσοδος",
-  "Header.logout": "Έξοδος",
+  "Header.login": "",
+  "Header.logout": "",
   "Header.Drodown.myAccount": "",
   "Header.Drodown.myActions": "",
   "Login.EMAIL_NOT_EXIST": "",
@@ -26,3 +27,4 @@
   "Registration.termConditionsTextDisagree": "",
   "Registration.termConditionsTitle": ""
 }
+

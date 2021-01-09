@@ -1,34 +1,40 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import Paper from '@material-ui/core/Paper';
-import TranslateIcon from '@material-ui/icons/Translate';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import React from 'react'
+import PropTypes from 'prop-types'
+import AppBar from '@material-ui/core/AppBar'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import Divider from '@material-ui/core/Divider'
+import Button from '@material-ui/core/Button'
+import Drawer from '@material-ui/core/Drawer'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload'
+import Paper from '@material-ui/core/Paper'
+import TranslateIcon from '@material-ui/icons/Translate'
+import VisibilityIcon from '@material-ui/icons/Visibility'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import Grid from '@material-ui/core/Grid'
+import Link from '@material-ui/core/Link'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
-import {makeStyles, useTheme} from '@material-ui/core/styles';
-import Highlight from 'react-highlight.js';
-import Tree from '../Tree/';
-import Download from '../Download/';
-import Stats from '../Stats/';
-import Preview from '../Preview/';
-import getTranslationsToTree from './getTranslationsToTree';
-import _ from 'lodash';
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import Highlight from 'react-highlight.js'
+import Tree from '../Tree/'
+import Download from '../Download/'
+import Stats from '../Stats/'
+import Preview from '../Preview/'
+import getTranslationsToTree from './getTranslationsToTree'
+import _ from 'lodash'
+import scrollToTop from '../libs/scrollToTop'
 
-const drawerWidth = 240;
+import en from './tran/en.json'
+import el from './tran/el.json'
+import es from './tran/es.json'
+
+const drawerWidth = 240
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,29 +78,33 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
-}));
+  title: {
+    flexGrow: 1,
+  },
+}))
 
 function App(props) {
-  const {window} = props;
-  const classes = useStyles();
-  const theme = useTheme();
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const { window } = props
+  const classes = useStyles()
+  const theme = useTheme()
+  const [isDemo, setIsDemo] = React.useState(false)
+  const [drawerOpen, setDrawerOpen] = React.useState(false)
 
-  const [mainLang, setMainLang] = React.useState('en');
-  const [selected, setSelected] = React.useState();
-  const [data, setData] = React.useState({});
-  const [visiblePreview, setVisiblePreview] = React.useState(false);
-  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  const [mainLang, setMainLang] = React.useState('en')
+  const [selected, setSelected] = React.useState()
+  const [data, setData] = React.useState({})
+  const [visiblePreview, setVisiblePreview] = React.useState(false)
+  const matches = useMediaQuery(theme.breakpoints.up('sm'))
 
   React.useEffect(() => {
     if (matches && !drawerOpen && data && data[mainLang]) {
-      setDrawerOpen(true);
+      setDrawerOpen(true)
     }
-  }, [matches, drawerOpen, data, mainLang]);
+  }, [matches, drawerOpen, data, mainLang])
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
-  };
+    setDrawerOpen(!drawerOpen)
+  }
 
   const drawer = (
     <div>
@@ -106,37 +116,37 @@ function App(props) {
           values={data}
           data={getTranslationsToTree(data[mainLang])}
           onSelect={nodeIds => {
-            setSelected(nodeIds);
+            setSelected(nodeIds)
+            scrollToTop()
           }}
           selected={selected}
         />
       ) : null}
     </div>
-  );
+  )
 
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  const container = window !== undefined ? () => window().document.body : undefined
 
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={
-          drawerOpen ? classes.appBarWithDrawer : classes.appBarWithoutDrawer
-        }>
+      <AppBar position="fixed" className={drawerOpen ? classes.appBarWithDrawer : classes.appBarWithoutDrawer}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            className={classes.menuButton}>
+            className={classes.menuButton}
+          >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" noWrap className={classes.title}>
             <TranslateIcon /> intl-translations
           </Typography>
+          <IconButton color="inherit" aria-label="GitHub" href="https://github.com/lybo/intl-translations" target="_blank">
+            <GitHubIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
@@ -148,7 +158,8 @@ function App(props) {
                 paper: classes.drawerPaper,
               }}
               variant="permanent"
-              open={drawerOpen}>
+              open={drawerOpen}
+            >
               {drawer}
             </Drawer>
           ) : (
@@ -163,7 +174,8 @@ function App(props) {
               }}
               ModalProps={{
                 keepMounted: true, // Better open performance on mobile.
-              }}>
+              }}
+            >
               {drawer}
             </Drawer>
           )}
@@ -172,135 +184,10 @@ function App(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
 
-        <Paper style={{padding: 20, marginBottom: 20}}>
-          {!data || !data[mainLang] ? (
-            <Button
-              fullWidth
-              color="primary"
-              variant="contained"
-              component="label">
-              Upload JSON Files
-              <input
-                name="files"
-                type="file"
-                multiple
-                hidden
-                onChange={async e => {
-                  const input = e.target;
-
-                  const results = await Promise.all(
-                    [...input.files].map(
-                      file =>
-                        new Promise((resolve, reject) => {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            try {
-                              console.log(file);
-                              const lang = file.name.replace('.json', '');
-                              resolve({lang, data: JSON.parse(reader.result)});
-                            } catch (err) {
-                              // Return a blank value; ignore non-JSON (or do whatever else)
-                              console.log('Please use .json!');
-                              resolve();
-                            }
-                          };
-                          reader.readAsText(file);
-                        }),
-                    ),
-                  );
-
-                  const resultsObj = results.reduce(
-                    (acc, item) => ({
-                      ...acc,
-                      [item.lang]: item.data,
-                    }),
-                    {},
-                  );
-                  // Do Stuff
-                  console.log(results, resultsObj);
-
-                  setMainLang(Object.keys(resultsObj)[0]);
-                  setData(resultsObj);
-                  setDrawerOpen(true);
-                }}
-              />
-            </Button>
-          ) : (
-            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-              <Button
-                color="secondary"
-                variant="contained"
-                size="small"
-                onClick={() => {
-                  setMainLang(null);
-                  setData({});
-                  setDrawerOpen(false);
-                  setSelected(null);
-                }}>
-                Cancel the translation
-              </Button>
-            </div>
-          )}
-          <br />
-          <br />
-
-          {data && data[mainLang] ? (
-            <React.Fragment>
-              <Stats data={data} />
-              <br />
-              <Grid container spacing={3}>
-                <Grid item xs={6}>
-                  <Download>
-                    {({download}) => (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        startIcon={<CloudDownloadIcon />}
-                        onClick={() => {
-                          download(data);
-                        }}>
-                        Download
-                      </Button>
-                    )}
-                  </Download>
-                </Grid>
-                <Grid
-                  item
-                  xs={6}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                  }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    startIcon={
-                      !visiblePreview ? (
-                        <VisibilityIcon />
-                      ) : (
-                        <VisibilityOffIcon />
-                      )
-                    }
-                    onClick={() => {
-                      setVisiblePreview(!visiblePreview);
-                    }}>
-                    {visiblePreview ? 'Hide' : 'Show'} Preview
-                  </Button>
-                </Grid>
-              </Grid>
-              <br />
-              {visiblePreview ? (
-                <Preview data={data} setSelected={setSelected} />
-              ) : null}
-            </React.Fragment>
-          ) : null}
-        </Paper>
         {selected ? (
-          <Paper style={{padding: 20, marginBottom: 20}}>
+          <Paper style={{ padding: 20, marginBottom: 20 }}>
             <div>
-              <div style={{textAlign: 'center'}}>
+              <div style={{ textAlign: 'center' }}>
                 <b>{selected}</b>
               </div>
               {Object.keys(data).map(lang => (
@@ -316,9 +203,9 @@ function App(props) {
                     multiline
                     value={_.get(data[lang], selected)}
                     onChange={(e, value) => {
-                      const newData = JSON.parse(JSON.stringify(data));
-                      newData[lang][selected] = e.target.value;
-                      setData(newData);
+                      const newData = JSON.parse(JSON.stringify(data))
+                      newData[lang][selected] = e.target.value
+                      setData(newData)
                     }}
                   />
                 </div>
@@ -327,10 +214,130 @@ function App(props) {
           </Paper>
         ) : null}
 
+        <Paper style={{ padding: 20, marginBottom: 20 }}>
+          {!data || !data[mainLang] ? (
+            <Button fullWidth color="primary" variant="contained" component="label">
+              Upload JSON Files
+              <input
+                name="files"
+                type="file"
+                multiple
+                hidden
+                onChange={async e => {
+                  const input = e.target
+
+                  const results = await Promise.all(
+                    [...input.files].map(
+                      file =>
+                        new Promise((resolve, reject) => {
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            try {
+                              console.log(file)
+                              const lang = file.name.replace('.json', '')
+                              resolve({ lang, data: JSON.parse(reader.result) })
+                            } catch (err) {
+                              // Return a blank value; ignore non-JSON (or do whatever else)
+                              console.log('Please use .json!')
+                              resolve()
+                            }
+                          }
+                          reader.readAsText(file)
+                        }),
+                    ),
+                  )
+
+                  const resultsObj = results.reduce(
+                    (acc, item) => ({
+                      ...acc,
+                      [item.lang]: item.data,
+                    }),
+                    {},
+                  )
+                  // Do Stuff
+                  console.log(results, resultsObj)
+
+                  setMainLang(Object.keys(resultsObj)[0])
+                  setData(resultsObj)
+                  setDrawerOpen(true)
+                }}
+              />
+            </Button>
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                color="secondary"
+                variant="contained"
+                size="small"
+                onClick={() => {
+                  setMainLang(null)
+                  setData({})
+                  setDrawerOpen(false)
+                  setSelected(null)
+                  setIsDemo(false)
+                  scrollToTop()
+                }}
+              >
+                Cancel the translation
+              </Button>
+            </div>
+          )}
+          <br />
+          <br />
+
+          {data && data[mainLang] ? (
+            <React.Fragment>
+              <Stats data={data} />
+              <br />
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <Download>
+                    {({ download }) => (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        startIcon={<CloudDownloadIcon />}
+                        onClick={() => {
+                          download(data)
+                        }}
+                      >
+                        Download
+                      </Button>
+                    )}
+                  </Download>
+                </Grid>
+                <Grid
+                  item
+                  xs={6}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    startIcon={!visiblePreview ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    onClick={() => {
+                      setVisiblePreview(!visiblePreview)
+                    }}
+                  >
+                    {visiblePreview ? 'Hide' : 'Show'} Preview
+                  </Button>
+                </Grid>
+              </Grid>
+              <br />
+              {visiblePreview ? <Preview data={data} setSelected={setSelected} /> : null}
+            </React.Fragment>
+          ) : null}
+        </Paper>
+
         <Typography variant="h4" component="h1" align="center" gutterBottom>
           intl-translations
         </Typography>
-        <Paper style={{padding: 20, marginBottom: 20}}>
+        <Paper style={{ padding: 20, marginBottom: 20 }}>
           <Typography variant="h6" component="h2" gutterBottom align="center">
             Translation editor for apps
           </Typography>
@@ -339,7 +346,7 @@ function App(props) {
             <Grid item xs={12}>
               <Grid container justify="center" spacing={2}>
                 <Grid item>
-                  <Paper style={{padding: 20}}>
+                  <Paper style={{ padding: 20 }}>
                     <Typography align="center" gutterBottom paragraph>
                       react-intl
                     </Typography>
@@ -348,13 +355,14 @@ function App(props) {
                       variant="contained"
                       color="primary"
                       target="_blank"
-                      href="https://formatjs.io/docs/react-intl">
+                      href="https://formatjs.io/docs/react-intl"
+                    >
                       Details
                     </Button>
                   </Paper>
                 </Grid>
                 <Grid item>
-                  <Paper style={{padding: 20}}>
+                  <Paper style={{ padding: 20 }}>
                     <Typography align="center" gutterBottom paragraph>
                       vue-intl
                     </Typography>
@@ -363,13 +371,14 @@ function App(props) {
                       variant="contained"
                       color="primary"
                       target="_blank"
-                      href="https://formatjs.io/docs/vue-intl">
+                      href="https://formatjs.io/docs/vue-intl"
+                    >
                       Details
                     </Button>
                   </Paper>
                 </Grid>
                 <Grid item>
-                  <Paper style={{padding: 20}}>
+                  <Paper style={{ padding: 20 }}>
                     <Typography align="center" gutterBottom paragraph>
                       formatjs
                     </Typography>
@@ -378,7 +387,8 @@ function App(props) {
                       variant="contained"
                       color="primary"
                       target="_blank"
-                      href="https://formatjs.io/docs/intl">
+                      href="https://formatjs.io/docs/intl"
+                    >
                       Details
                     </Button>
                   </Paper>
@@ -388,27 +398,49 @@ function App(props) {
           </Grid>
 
           <br />
-          <Typography
-            variant="body1"
-            component="div"
-            gutterBottom
-            align="center">
+          <Typography variant="body1" component="div" gutterBottom align="center">
             This tool is meant to help developers who use{' '}
-            <Link
-              href="https://www.npmjs.com/package/babel-plugin-react-intl-auto"
-              target="_blank">
+            <Link href="https://www.npmjs.com/package/babel-plugin-react-intl-auto" target="_blank">
               babel-plugin-react-intl-auto
             </Link>{' '}
             and{' '}
-            <Link
-              href="https://www.npmjs.com/package/extract-react-intl-messages"
-              target="_blank">
+            <Link href="https://www.npmjs.com/package/extract-react-intl-messages" target="_blank">
               extract-react-intl-messages
             </Link>
           </Typography>
           <br />
         </Paper>
-        <Paper style={{padding: 20, marginBottom: 20}}>
+
+        {!isDemo ? (
+          <Paper style={{ padding: 20, marginBottom: 20 }}>
+            <Typography variant="h6" component="h2" gutterBottom align="center">
+              Demo
+            </Typography>
+
+            <Typography variant="body1" component="div" gutterBottom align="center">
+              You can try out with 2 languages 'en', 'el' and 'es'
+            </Typography>
+            <br />
+            <Button
+              onClick={() => {
+                const demoLangs = { en, el, es }
+                setMainLang('en')
+                setData(demoLangs)
+                setDrawerOpen(true)
+                setIsDemo(true)
+                scrollToTop()
+              }}
+              fullWidth
+              color="primary"
+              variant="contained"
+              component="label"
+            >
+              Try the sample
+            </Button>
+          </Paper>
+        ) : null}
+
+        <Paper style={{ padding: 20, marginBottom: 20 }}>
           <Typography variant="h6" component="h2" gutterBottom align="center">
             JSON format
           </Typography>
@@ -417,7 +449,9 @@ function App(props) {
             {`
 {
   "ComponentName.error": "Error",
-  "ComponentName.Success": "Success"
+  "ComponentName.Success": "Success",
+  "ComponentName.SubComponentName.error": "Error",
+  "ComponentName.SubComponentName.Success": "Success"
 }
             `}
           </Highlight>
@@ -426,14 +460,40 @@ function App(props) {
             {`
 {
   "ComponentName.error": "",
-  "ComponentName.Success": ""
+  "ComponentName.Success": "",
+  "ComponentName.SubComponentName.error": "",
+  "ComponentName.SubComponentName.Success": ""
 }
             `}
           </Highlight>
         </Paper>
+        <Paper style={{ padding: 20, marginBottom: 20 }}>
+          <Typography variant="h6" component="h2" gutterBottom align="center">
+            Implemented with
+          </Typography>
+          <Typography paragraph>
+            <ul>
+              <li>
+                <Link href="https://reactjs.org/" target="_blank">
+                  reactjs
+                </Link>{' '}
+              </li>
+              <li>
+                <Link href="https://create-react-app.dev/" target="_blank">
+                  create-react-app
+                </Link>{' '}
+              </li>
+              <li>
+                <Link href="https://material-ui.com/" target="_blank">
+                  material-ui
+                </Link>{' '}
+              </li>
+            </ul>
+          </Typography>
+        </Paper>
       </main>
     </div>
-  );
+  )
 }
 
 App.propTypes = {
@@ -442,6 +502,6 @@ App.propTypes = {
    * You won't need it on your project.
    */
   window: PropTypes.func,
-};
+}
 
-export default App;
+export default App
