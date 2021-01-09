@@ -12,3 +12,6 @@ Frameworks:
  - [react-intl](https://formatjs.io/docs/react-intl)
  - [vue-intl](https://formatjs.io/docs/vue-intl)
  - [formatjs](https://formatjs.io/docs/intl)
+
+## License
+This project is licensed under the terms of the [GNU General Public License v3.0](https://github.com/lybo/intl-translations/blob/main/LICENSE.md).
