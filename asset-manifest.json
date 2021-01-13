@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/intl-translations/static/js/main.a8029629.chunk.js",
-    "main.js.map": "/intl-translations/static/js/main.a8029629.chunk.js.map",
+    "main.js": "/intl-translations/static/js/main.831ae502.chunk.js",
+    "main.js.map": "/intl-translations/static/js/main.831ae502.chunk.js.map",
     "runtime-main.js": "/intl-translations/static/js/runtime-main.8d531ca6.js",
     "runtime-main.js.map": "/intl-translations/static/js/runtime-main.8d531ca6.js.map",
-    "static/js/2.b0ac4840.chunk.js": "/intl-translations/static/js/2.b0ac4840.chunk.js",
-    "static/js/2.b0ac4840.chunk.js.map": "/intl-translations/static/js/2.b0ac4840.chunk.js.map",
+    "static/js/2.fbf79ff3.chunk.js": "/intl-translations/static/js/2.fbf79ff3.chunk.js",
+    "static/js/2.fbf79ff3.chunk.js.map": "/intl-translations/static/js/2.fbf79ff3.chunk.js.map",
     "static/js/3.c883cd7f.chunk.js": "/intl-translations/static/js/3.c883cd7f.chunk.js",
     "static/js/3.c883cd7f.chunk.js.map": "/intl-translations/static/js/3.c883cd7f.chunk.js.map",
     "index.html": "/intl-translations/index.html",
-    "static/js/2.b0ac4840.chunk.js.LICENSE.txt": "/intl-translations/static/js/2.b0ac4840.chunk.js.LICENSE.txt"
+    "static/js/2.fbf79ff3.chunk.js.LICENSE.txt": "/intl-translations/static/js/2.fbf79ff3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.8d531ca6.js",
-    "static/js/2.b0ac4840.chunk.js",
-    "static/js/main.a8029629.chunk.js"
+    "static/js/2.fbf79ff3.chunk.js",
+    "static/js/main.831ae502.chunk.js"
   ]
 }
