@@ -29,6 +29,7 @@ import Preview from '../Preview/'
 import getTranslationsToTree from './getTranslationsToTree'
 import _ from 'lodash'
 import scrollToTop from '../libs/scrollToTop'
+// import validate from '../libs/validate'
 
 import en from './tran/en.json'
 import el from './tran/el.json'
@@ -87,7 +88,7 @@ function App(props) {
   const { window } = props
   const classes = useStyles()
   const theme = useTheme()
-  const [isDemo, setIsDemo] = React.useState(false)
+  // const [isDemo, setIsDemo] = React.useState(false)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
 
   const [mainLang, setMainLang] = React.useState('en')
@@ -144,7 +145,12 @@ function App(props) {
           <Typography variant="h6" noWrap className={classes.title}>
             <TranslateIcon /> intl-translations
           </Typography>
-          <IconButton color="inherit" aria-label="GitHub" href="https://github.com/lybo/intl-translations" target="_blank">
+          <IconButton
+            color="inherit"
+            aria-label="GitHub"
+            href="https://github.com/lybo/intl-translations"
+            target="_blank"
+          >
             <GitHubIcon />
           </IconButton>
         </Toolbar>
@@ -216,53 +222,91 @@ function App(props) {
 
         <Paper style={{ padding: 20, marginBottom: 20 }}>
           {!data || !data[mainLang] ? (
-            <Button fullWidth color="primary" variant="contained" component="label">
-              Upload JSON Files
-              <input
-                name="files"
-                type="file"
-                multiple
-                hidden
-                onChange={async e => {
-                  const input = e.target
+            <Grid container spacing={10}>
+              <Grid item xs={6}>
+                <Typography variant="h6" component="h2" gutterBottom align="center">
+                  Import languages
+                </Typography>
 
-                  const results = await Promise.all(
-                    [...input.files].map(
-                      file =>
-                        new Promise((resolve, reject) => {
-                          const reader = new FileReader()
-                          reader.onloadend = () => {
-                            try {
-                              console.log(file)
-                              const lang = file.name.replace('.json', '')
-                              resolve({ lang, data: JSON.parse(reader.result) })
-                            } catch (err) {
-                              // Return a blank value; ignore non-JSON (or do whatever else)
-                              console.log('Please use .json!')
-                              resolve()
-                            }
-                          }
-                          reader.readAsText(file)
+                <Typography style={{ minHeight: 100 }} variant="body1" component="div" gutterBottom align="center">
+                  Select the generated json files
+                </Typography>
+                <br />
+                <Button fullWidth color="primary" variant="contained" component="label">
+                  Upload JSON Files
+                  <input
+                    name="files"
+                    type="file"
+                    multiple
+                    hidden
+                    onChange={async e => {
+                      const input = e.target
+
+                      const results = await Promise.all(
+                        [...input.files].map(
+                          file =>
+                            new Promise((resolve, reject) => {
+                              const reader = new FileReader()
+                              reader.onloadend = () => {
+                                try {
+                                  console.log(file)
+                                  const lang = file.name.replace('.json', '')
+                                  resolve({ lang, data: JSON.parse(reader.result) })
+                                } catch (err) {
+                                  // Return a blank value; ignore non-JSON (or do whatever else)
+                                  console.log('Please use .json!')
+                                  resolve()
+                                }
+                              }
+                              reader.readAsText(file)
+                            }),
+                        ),
+                      )
+
+                      const resultsObj = results.reduce(
+                        (acc, item) => ({
+                          ...acc,
+                          [item.lang]: item.data,
                         }),
-                    ),
-                  )
+                        {},
+                      )
+                      // Do Stuff
+                      console.log(results, resultsObj)
 
-                  const resultsObj = results.reduce(
-                    (acc, item) => ({
-                      ...acc,
-                      [item.lang]: item.data,
-                    }),
-                    {},
-                  )
-                  // Do Stuff
-                  console.log(results, resultsObj)
+                      setMainLang(Object.keys(resultsObj)[0])
+                      setData(resultsObj)
+                      setDrawerOpen(true)
+                    }}
+                  />
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" component="h2" gutterBottom align="center">
+                  Demo
+                </Typography>
 
-                  setMainLang(Object.keys(resultsObj)[0])
-                  setData(resultsObj)
-                  setDrawerOpen(true)
-                }}
-              />
-            </Button>
+                <Typography style={{ minHeight: 100 }} variant="body1" component="div" gutterBottom align="center">
+                  You can try out with 3 languages 'en', 'el' and 'es'
+                </Typography>
+                <br />
+                <Button
+                  onClick={() => {
+                    const demoLangs = { en, el, es }
+                    setMainLang('en')
+                    setData(demoLangs)
+                    setDrawerOpen(true)
+                    // setIsDemo(true)
+                    scrollToTop()
+                  }}
+                  fullWidth
+                  color="primary"
+                  variant="contained"
+                  component="label"
+                >
+                  Try the sample
+                </Button>
+              </Grid>
+            </Grid>
           ) : (
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button
@@ -274,7 +318,7 @@ function App(props) {
                   setData({})
                   setDrawerOpen(false)
                   setSelected(null)
-                  setIsDemo(false)
+                  // setIsDemo(false)
                   scrollToTop()
                 }}
               >
@@ -410,35 +454,6 @@ function App(props) {
           </Typography>
           <br />
         </Paper>
-
-        {!isDemo ? (
-          <Paper style={{ padding: 20, marginBottom: 20 }}>
-            <Typography variant="h6" component="h2" gutterBottom align="center">
-              Demo
-            </Typography>
-
-            <Typography variant="body1" component="div" gutterBottom align="center">
-              You can try out with 2 languages 'en', 'el' and 'es'
-            </Typography>
-            <br />
-            <Button
-              onClick={() => {
-                const demoLangs = { en, el, es }
-                setMainLang('en')
-                setData(demoLangs)
-                setDrawerOpen(true)
-                setIsDemo(true)
-                scrollToTop()
-              }}
-              fullWidth
-              color="primary"
-              variant="contained"
-              component="label"
-            >
-              Try the sample
-            </Button>
-          </Paper>
-        ) : null}
 
         <Paper style={{ padding: 20, marginBottom: 20 }}>
           <Typography variant="h6" component="h2" gutterBottom align="center">
